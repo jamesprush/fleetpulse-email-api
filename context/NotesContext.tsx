@@ -40,11 +40,13 @@ export type NotesContextType = {
   setWeeklyLog: React.Dispatch<React.SetStateAction<WeeklyLog>>;
 
   writeups: WeeklyWriteups;
+  setWriteups: React.Dispatch<React.SetStateAction<WeeklyWriteups>>;
   addWriteup: (day: Day, division: DivisionKey, text: string) => void;
   toggleWriteup: (day: Day, division: DivisionKey, index: number) => void;
   removeWriteup: (day: Day, division: DivisionKey, index: number) => void;
 
   training: WeeklyTraining;
+  setTraining: React.Dispatch<React.SetStateAction<WeeklyTraining>>;
   addTraining: (day: Day, item: Omit<TrainingItem, 'done'>) => void;
   toggleTraining: (day: Day, index: number) => void;
   removeTraining: (day: Day, index: number) => void;
@@ -139,10 +141,12 @@ export const NotesProvider: React.FC<React.PropsWithChildren> = ({ children }) =
         weeklyLog,
         setWeeklyLog,
         writeups,
+        setWriteups,
         addWriteup,
         toggleWriteup,
         removeWriteup,
         training,
+        setTraining,
         addTraining,
         toggleTraining,
         removeTraining,

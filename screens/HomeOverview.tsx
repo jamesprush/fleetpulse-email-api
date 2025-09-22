@@ -128,7 +128,7 @@ export default function HomeOverview() {
               const emailContent = formatNotesForEmail();
               
               // Send email via backend API
-              const response = await fetch('https://your-vercel-app.vercel.app/api/send-email', {
+              const response = await fetch('https://fleetpulse-email-api.vercel.app/api/send-email', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -141,8 +141,12 @@ export default function HomeOverview() {
               });
               
               if (!response.ok) {
-                throw new Error('Failed to send email');
+                const errorData = await response.json();
+                throw new Error(`Failed to send email: ${errorData.message || 'Unknown error'}`);
               }
+              
+              const result = await response.json();
+              console.log('Email sent successfully:', result);
               
               // Reset all data
               setWeeklyLog({
