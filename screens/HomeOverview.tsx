@@ -71,7 +71,7 @@ export default function HomeOverview() {
           if (dmvTraining.length > 0) {
             emailContent += 'Training:\n';
             dmvTraining.forEach(t => {
-              emailContent += `• ${t.done ? '✅' : '◯'} ${t.driver} — ${t.location.toUpperCase()} | Van ${t.van} (Trainer: ${t.trainer})\n`;
+              emailContent += `• ${t.done ? '✅' : '◯'} ${t.driver} (${t.location.toUpperCase()}) ${t.trainer} ${t.van}\n`;
             });
             emailContent += '\n';
           }
@@ -101,7 +101,7 @@ export default function HomeOverview() {
           if (nycTraining.length > 0) {
             emailContent += 'Training:\n';
             nycTraining.forEach(t => {
-              emailContent += `• ${t.done ? '✅' : '◯'} ${t.driver} — ${t.location.toUpperCase()} | Van ${t.van} (Trainer: ${t.trainer})\n`;
+              emailContent += `• ${t.done ? '✅' : '◯'} ${t.driver} (${t.location.toUpperCase()}) ${t.trainer} ${t.van}\n`;
             });
             emailContent += '\n';
           }
@@ -114,76 +114,48 @@ export default function HomeOverview() {
     return emailContent;
   };
 
-  const handleWeekReset = async () => {
+  const handleWeekReset = () => {
     Alert.alert(
-      'Send & Reset Week',
-      'This will send the current week\'s notes to HR and reset for next week. Continue?',
+      'Reset Week',
+      'This will clear all notes, write-ups, and training data for a fresh start. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: 'Send & Reset', 
+          text: 'Reset Week', 
           style: 'destructive',
-          onPress: async () => {
-            try {
-              const emailContent = formatNotesForEmail();
-              
-              // Send email via backend API
-              const response = await fetch('https://fleetpulse-email-api.vercel.app/api/send-email', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  recipient: 'james@WheelzUp.com',
-                  subject: `FleetPulse Weekly Notes - ${weekString}`,
-                  content: emailContent,
-                }),
-              });
-              
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to send email: ${errorData.message || 'Unknown error'}`);
-              }
-              
-              const result = await response.json();
-              console.log('Email sent successfully:', result);
-              
-              // Reset all data
-              setWeeklyLog({
-                Monday: { dmv: '', nyc: '', academy: '' },
-                Tuesday: { dmv: '', nyc: '', academy: '' },
-                Wednesday: { dmv: '', nyc: '', academy: '' },
-                Thursday: { dmv: '', nyc: '', academy: '' },
-                Friday: { dmv: '', nyc: '', academy: '' },
-                Saturday: { dmv: '', nyc: '', academy: '' },
-                Sunday: { dmv: '', nyc: '', academy: '' },
-              });
-              
-              setWriteups({
-                Monday: { dmv: [], nyc: [] },
-                Tuesday: { dmv: [], nyc: [] },
-                Wednesday: { dmv: [], nyc: [] },
-                Thursday: { dmv: [], nyc: [] },
-                Friday: { dmv: [], nyc: [] },
-                Saturday: { dmv: [], nyc: [] },
-                Sunday: { dmv: [], nyc: [] },
-              });
-              
-              setTraining({
-                Monday: [],
-                Tuesday: [],
-                Wednesday: [],
-                Thursday: [],
-                Friday: [],
-                Saturday: [],
-                Sunday: [],
-              });
-              
-              Alert.alert('Success', 'Notes sent to HR and week reset!');
-            } catch (error) {
-              console.error('Email error:', error);
-              Alert.alert('Error', 'Failed to send email. Please check your connection and try again.');
-            }
+          onPress: () => {
+            // Reset all data
+            setWeeklyLog({
+              Monday: { dmv: '', nyc: '', academy: '' },
+              Tuesday: { dmv: '', nyc: '', academy: '' },
+              Wednesday: { dmv: '', nyc: '', academy: '' },
+              Thursday: { dmv: '', nyc: '', academy: '' },
+              Friday: { dmv: '', nyc: '', academy: '' },
+              Saturday: { dmv: '', nyc: '', academy: '' },
+              Sunday: { dmv: '', nyc: '', academy: '' },
+            });
+            
+            setWriteups({
+              Monday: { dmv: [], nyc: [] },
+              Tuesday: { dmv: [], nyc: [] },
+              Wednesday: { dmv: [], nyc: [] },
+              Thursday: { dmv: [], nyc: [] },
+              Friday: { dmv: [], nyc: [] },
+              Saturday: { dmv: [], nyc: [] },
+              Sunday: { dmv: [], nyc: [] },
+            });
+            
+            setTraining({
+              Monday: [],
+              Tuesday: [],
+              Wednesday: [],
+              Thursday: [],
+              Friday: [],
+              Saturday: [],
+              Sunday: [],
+            });
+            
+            Alert.alert('Success', 'Week reset! All data cleared.');
           }
         }
       ]
@@ -237,7 +209,7 @@ export default function HomeOverview() {
             <Text style={[styles.subHeader, { color: colors.primary }]}>🚛 Training</Text>
             {trainingItems.map((t, i) => (
               <Text key={i} style={[styles.itemText, { color: colors.text }]}>
-                {t.done ? '✅' : '◯'} {t.driver} — {t.location.toUpperCase()} | Van {t.van} (Trainer: {t.trainer})
+                {t.done ? '✅' : '◯'} {t.driver} ({t.location.toUpperCase()}) {t.trainer} {t.van}
               </Text>
             ))}
           </View>
@@ -256,13 +228,6 @@ export default function HomeOverview() {
               <Text style={[styles.separator, { color: colors.primary }]}>—</Text>
               <Text style={[styles.subheaderText, { color: colors.primary }]}>{weekString}</Text>
             </View>
-            <TouchableOpacity 
-              style={[styles.resetBtn, { backgroundColor: colors.primary }]}
-              onPress={handleWeekReset}
-            >
-              <Text style={styles.resetIcon}>📧</Text>
-              <Text style={styles.resetBtnText}>Send & Reset</Text>
-            </TouchableOpacity>
           </View>
         </View>
         {DAYS.map(day => {
@@ -295,6 +260,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 8,
     alignItems: 'center',
+    paddingHorizontal: 32,
   },
   resetBtn: {
     flexDirection: 'row',
@@ -319,18 +285,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'Inter_600SemiBold',
   },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 149, 0, 0.1)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 149, 0, 0.3)',
-    minHeight: 48,
-  },
+      headerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        backgroundColor: 'rgba(255, 149, 0, 0.1)',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 149, 0, 0.3)',
+        minHeight: 36,
+      },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',

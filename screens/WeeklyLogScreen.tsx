@@ -19,11 +19,13 @@ export default function WeeklyLogScreen() {
   const [localLog, setLocalLog] = useState(initial);
   const [toast, setToast] = useState<string | null>(null);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const setVal = (day: string, field: 'dmv' | 'nyc', val: string) =>
     setLocalLog(prev => ({ ...prev, [day]: { ...prev[day as keyof typeof prev], [field]: val } }));
 
   const handleSave = () => {
+    setIsSaving(true);
     setWeeklyLog(localLog);
     showToast('✅ Notes saved');
     Keyboard.dismiss();
@@ -84,15 +86,31 @@ export default function WeeklyLogScreen() {
       </ScrollView>
 
       {!isKeyboardVisible && (
-        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveText}>💾 Save Notes</Text>
+        <TouchableOpacity 
+          style={[styles.saveBtn, isSaving && styles.savingBtn]} 
+          onPress={handleSave}
+          disabled={isSaving}
+        >
+          <Text style={styles.saveText}>
+            {isSaving ? '⏳ Saving...' : '💾 Save Notes'}
+          </Text>
         </TouchableOpacity>
       )}
 
       {isKeyboardVisible && (
         <View style={styles.keyboardSaveContainer}>
-          <TouchableOpacity style={[styles.keyboardSaveBtn, { backgroundColor: colors.primary }]} onPress={handleSave}>
-            <Text style={styles.keyboardSaveText}>💾 Save Notes</Text>
+          <TouchableOpacity 
+            style={[
+              styles.keyboardSaveBtn, 
+              { backgroundColor: colors.primary },
+              isSaving && styles.savingBtn
+            ]} 
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            <Text style={styles.keyboardSaveText}>
+              {isSaving ? '⏳ Saving...' : '💾 Save Notes'}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -151,4 +169,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   keyboardSaveText: { color: '#fff', fontSize: 14, fontWeight: '600' },
+  savingBtn: {
+    opacity: 0.7,
+  },
 });

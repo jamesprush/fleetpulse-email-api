@@ -17,6 +17,14 @@ export default function HubScreen() {
   const allModules = [
     ...visible,
     {
+      id: 'truck-dashboard',
+      title: 'Truck Dashboard',
+      subtitle: 'Fleet • Maintenance • Status',
+      icon: { pack: 'Ionicons', name: 'car-outline' },
+      route: 'TruckDashboard',
+      roles: ['manager', 'admin'],
+    },
+    {
       id: 'roster',
       title: 'FleetPulse Roster',
       subtitle: 'Trucks • Drivers • Locations',
@@ -39,6 +47,7 @@ export default function HubScreen() {
       'document-text-outline': 'document-text-outline',
       'people-outline': 'people-outline',
       'chatbubbles-outline': 'chatbubbles-outline',
+      'car-outline': 'car-outline',
     };
     return iconMap[iconName] || 'folder-outline';
   };

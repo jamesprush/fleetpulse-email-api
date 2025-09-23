@@ -25,6 +25,7 @@ import WeeklyLogScreen from './screens/WeeklyLogScreen';
 import DetailsScreen from './screens/DetailsScreen';
 import TrainingScreen from './screens/TrainingScreen';
 import HubScreen from './screens/HubScreen';
+import TruckDashboard from './screens/TruckDashboard';
 
 import { RootStackParamList } from './types';
 import * as CustomTheme from './theme';
@@ -227,6 +228,18 @@ export default function App() {
             <RootStack.Screen name="NotesStack" options={{ headerShown: false }}>
               {() => <NotesStackNavigator toggleTheme={toggleTheme} dark={dark} />}
             </RootStack.Screen>
+            <RootStack.Screen 
+              name="TruckDashboard" 
+              component={TruckDashboard}
+              options={{ 
+                title: 'Truck Dashboard',
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: dark ? '#1a1a1a' : '#f5f5f5',
+                },
+                headerTintColor: dark ? '#fff' : '#000',
+              }}
+            />
           </RootStack.Navigator>
         </NavigationContainer>
         <ToastMessage />
