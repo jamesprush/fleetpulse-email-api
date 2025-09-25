@@ -26,12 +26,14 @@ import DetailsScreen from './screens/DetailsScreen';
 import TrainingScreen from './screens/TrainingScreen';
 import HubScreen from './screens/HubScreen';
 import TruckDashboard from './screens/TruckDashboard';
+import ConnectScreen from './screens/ConnectScreen';
 
 import { RootStackParamList } from './types';
 import * as CustomTheme from './theme';
 import ToastMessage from './components/ToastMessage';
 import { NotesProvider } from './context/NotesContext';
 import { AuthProvider } from './context/AuthContext';
+import { ConnectProvider } from './context/ConnectContext';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const NotesStack = createNativeStackNavigator<RootStackParamList>();
@@ -196,8 +198,9 @@ export default function App() {
   return (
     <AuthProvider>
       <NotesProvider>
-        <StatusBar style={dark ? 'light' : 'dark'} />
-        <NavigationContainer theme={dark ? CustomTheme.DarkTheme : CustomTheme.LightTheme}>
+        <ConnectProvider>
+          <StatusBar style={dark ? 'light' : 'dark'} />
+          <NavigationContainer theme={dark ? CustomTheme.DarkTheme : CustomTheme.LightTheme}>
           <RootStack.Navigator initialRouteName="Hub">
             <RootStack.Screen
               name="Hub"
@@ -240,9 +243,25 @@ export default function App() {
                 headerTintColor: dark ? '#fff' : '#000',
               }}
             />
+            <RootStack.Screen 
+              name="Connect" 
+              component={ConnectScreen}
+              options={{ 
+                title: 'FleetPulse Connect • DEV',
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: dark ? '#1a1a1a' : '#f5f5f5',
+                },
+                headerTintColor: dark ? '#fff' : '#000',
+                // Disable back-swipe to Hub while in Connect
+                gestureEnabled: false,
+                fullScreenGestureEnabled: false,
+              }}
+            />
           </RootStack.Navigator>
-        </NavigationContainer>
-        <ToastMessage />
+          </NavigationContainer>
+          <ToastMessage />
+        </ConnectProvider>
       </NotesProvider>
     </AuthProvider>
   );

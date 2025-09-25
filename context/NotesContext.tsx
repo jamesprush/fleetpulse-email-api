@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /* ------------------ Types ------------------ */
 
@@ -80,6 +81,55 @@ export const NotesProvider: React.FC<React.PropsWithChildren> = ({ children }) =
   const [weeklyLog, setWeeklyLog] = useState<WeeklyLog>(initWeeklyLog);
   const [writeups, setWriteups] = useState<WeeklyWriteups>(initWriteups);
   const [training, setTraining] = useState<WeeklyTraining>(initTraining);
+
+  // Load data from storage on app start
+  useEffect(() => {
+    loadDataFromStorage();
+  }, []);
+
+  // Save data to storage whenever it changes
+  useEffect(() => {
+    saveDataToStorage();
+  }, [weeklyLog, writeups, training]);
+
+  const loadDataFromStorage = async () => {
+    try {
+      const [savedLog, savedWriteups, savedTraining] = await Promise.all([
+        AsyncStorage.getItem('fleetpulse_weeklyLog'),
+        AsyncStorage.getItem('fleetpulse_writeups'),
+        AsyncStorage.getItem('fleetpulse_training'),
+      ]);
+
+      if (savedLog) {
+        const parsedLog = JSON.parse(savedLog);
+        setWeeklyLog(parsedLog);
+      }
+
+      if (savedWriteups) {
+        const parsedWriteups = JSON.parse(savedWriteups);
+        setWriteups(parsedWriteups);
+      }
+
+      if (savedTraining) {
+        const parsedTraining = JSON.parse(savedTraining);
+        setTraining(parsedTraining);
+      }
+    } catch (error) {
+      console.error('Error loading data from storage:', error);
+    }
+  };
+
+  const saveDataToStorage = async () => {
+    try {
+      await Promise.all([
+        AsyncStorage.setItem('fleetpulse_weeklyLog', JSON.stringify(weeklyLog)),
+        AsyncStorage.setItem('fleetpulse_writeups', JSON.stringify(writeups)),
+        AsyncStorage.setItem('fleetpulse_training', JSON.stringify(training)),
+      ]);
+    } catch (error) {
+      console.error('Error saving data to storage:', error);
+    }
+  };
 
   // --- Write-ups ---
   const addWriteup = (day: Day, division: DivisionKey, text: string) => {

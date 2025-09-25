@@ -3,24 +3,32 @@ export interface Truck {
   vehicleNumber: string;        // e.g. "z203", "z420"
   division: 'NYC' | 'DMV';
   driver: string;
-  status: string;              // e.g. "c/o (MERCOM)", "(Fleet)"
+  status: string;              // e.g. "Active", "Maintenance", "Out of Service", custom text
   plate: string;
   mileage: number;
   registration: {
     number: string;
-    expiryDate: string;
+    expiryDate: string;        // MM/DD/YYYY
+    state?: string;
   };
   oilChange: {
-    lastChange: string;
-    nextDue: string;
+    lastChange: string;        // MM/DD/YYYY
+    nextDue: string;           // MM/DD/YYYY
     mileageAtLastChange: number;
   };
   maintenance: {
-    lastService: string;
-    nextService: string;
-    issues: string[];
+    lastService: string;       // MM/DD/YYYY
+    nextService: string;       // MM/DD/YYYY
+    issues: string[];          // outstanding issues
+    priority?: 'low' | 'med' | 'high';
   };
-  location?: string;
+  inspections?: {
+    lastInspection?: string;
+    nextInspection?: string;
+    passed?: boolean;
+  };
+  location?: string;           // depot or current area
+  tags?: string[];             // e.g. ['spare', 'loaner']
   notes?: string;
   createdBy: string;
   createdAt: number;
@@ -45,6 +53,7 @@ export interface FleetIOData {
 export interface TruckDashboardFilters {
   division: 'NYC' | 'DMV' | 'ALL';
   status: 'ALL' | 'ACTIVE' | 'MAINTENANCE' | 'OUT_OF_SERVICE';
+  search?: string;
   sortBy: 'VEHICLE_NUMBER' | 'MILEAGE' | 'LAST_SERVICE' | 'DRIVER';
   sortOrder: 'ASC' | 'DESC';
 }

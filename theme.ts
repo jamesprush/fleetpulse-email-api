@@ -13,7 +13,7 @@ export const DarkTheme = {
     card: '#111111',
     text: '#ffffff',
     border: '#222222',
-    primary: '#FF9500',
+    primary: '#FF9500', // Keep the orange
     notification: '#ff453a',
   },
 };
